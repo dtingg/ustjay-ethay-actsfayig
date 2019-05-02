@@ -85,7 +85,7 @@ def template():
         <img src="https://res.cloudinary.com/hfamjelvo/image/upload/v1556828209/code_ssq7xp.jpg" class="card-img-top" alt="computer code">
         <div class="card-body">
         <h5 class="card-title">Translation Page</h5>
-        <p class="card-text"><a href={}>{}</a></p>
+        <p class="card-text">{}</p>
         <a class="btn btn-secondary" href="{}" role="button">Go to translation</a>
         </div>
     </div>
@@ -119,7 +119,7 @@ def home():
 
     translation = get_translation(new_page)
 
-    return template().format(fact, new_page, new_page, new_page, translation)
+    return template().format(fact, new_page, new_page, translation)
 
 
 if __name__ == "__main__":
