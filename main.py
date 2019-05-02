@@ -9,10 +9,6 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
-url = "https://hidden-journey-62459.herokuapp.com/piglatinize/"
-
-payload = {}
-
 
 def get_fact():
     """Get random fact from unkno.com"""
@@ -24,8 +20,10 @@ def get_fact():
     return facts[0].getText()
 
 
-def translate(fact):
-    """Send random fact and get url for Pig Latin translation"""
+
+def get_page(fact):
+    """Translate random fact into Pig Latin and get new url"""
+    url = "https://hidden-journey-62459.herokuapp.com/piglatinize/"
     payload = {"input_text": fact}
 
     r = requests.post(url, data=payload, allow_redirects=False)
@@ -35,15 +33,58 @@ def translate(fact):
     return new_page
 
 
+def get_translation(new_page):
+    response = requests.get(new_page)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    fact = soup.find("body").getText()
+    strip_fact = fact.replace("Pig Latin\nEsultray", "")
+
+    return strip_fact
+
+
+def template():
+    page_template = """
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Dianna's Pig Latin Fact Mashup</title>
+  </head>
+  <body>
+    <h1>Dianna's Pig Latin Fact Mashup</h1><br>
+    
+    <h2>Original Fact</h2>
+    <h3>{}</h3><br>
+    
+    <h2>Fact in Pig Latin</h2>
+    <h3>{}</h3><br>
+    
+    <h2>Translation Page</h2>
+    <h3><a href={}>{}</a></h3>
+    
+  </body>
+</html>  
+    """
+
+    return page_template
+
+
 @app.route('/')
 def home():
     fact = get_fact().strip()
 
-    pig_fact = translate(fact)
+    new_page = get_page(fact)
 
-    pig_link = f"<a href={pig_fact}>{pig_fact}</a>"
+    translation = get_translation(new_page)
 
-    return pig_link
+    return template().format(fact, translation, new_page, new_page)
 
 
 if __name__ == "__main__":
