@@ -20,8 +20,10 @@ def get_fact():
     soup = BeautifulSoup(response.content, "html.parser")
     facts = soup.find_all("div", id="content")
 
-    # Fix apostrophe's that aren't formatted correctly
-    fact = facts[0].getText().replace("â€™", "'")
+    fact = facts[0].getText()
+
+    # Fix weird formatting
+    fact = fact.replace("â€™", "'").replace("â€œ", '"').replace('â€”', "—").replace("â€", '"')
 
     return fact
 
