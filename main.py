@@ -20,7 +20,10 @@ def get_fact():
     soup = BeautifulSoup(response.content, "html.parser")
     facts = soup.find_all("div", id="content")
 
-    return facts[0].getText()
+    # Fix apostrophe's that aren't formatted correctly
+    fact = facts[0].getText().replace("â€™", "'")
+
+    return fact
 
 
 def get_page(fact):
